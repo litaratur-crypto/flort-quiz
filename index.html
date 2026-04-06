@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Show 💋</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:    #0a0a0a;
+    --deep:     #110d1a;
+    --crimson:  #8b0000;
+    --red:      #c0392b;
+    --hot:      #e63946;
+    --gold:     #d4a017;
+    --amber:    #f5c842;
+    --purple:   #4a0e6b;
+    --violet:   #7b2d8b;
+    --cream:    #fff8f0;
+    --white:    #ffffff;
+  }
+
+  html, body {
+    min-height: 100%;
+    width: 100%;
+    background: var(--black);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% -10%, rgba(139,0,0,.45) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 85% 80%, rgba(74,14,107,.5) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 10% 90%, rgba(192,57,43,.3) 0%, transparent 60%),
+      linear-gradient(160deg, #0a0a0a 0%, #110d1a 50%, #0f0a0f 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .spotlights {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .spot {
+    position: absolute;
+    border-radius: 50%;
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+
+  .spot-1 {
+    width: 300px; height: 600px;
+    top: -200px; left: 10%;
+    background: radial-gradient(ellipse, rgba(212,160,23,.18) 0%, transparent 70%);
+    transform-origin: top center;
+    animation-delay: 0s;
+  }
+
+  .spot-2 {
+    width: 280px; height: 550px;
+    top: -180px; right: 15%;
+    background: radial-gradient(ellipse, rgba(139,0,0,.2) 0%, transparent 70%);
+    transform-origin: top center;
+    animation-delay: -3s;
+  }
+
+  .spot-3 {
+    width: 200px; height: 400px;
+    top: -120px; left: 50%;
+    background: radial-gradient(ellipse, rgba(123,45,139,.2) 0%, transparent 70%);
+    transform-origin: top center;
+    animation-delay: -5s;
+  }
+
+  @keyframes drift {
+    0% { transform: rotate(-12deg); }
+    100% { transform: rotate(12deg); }
+  }
+
+  .screen {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    z-index: 10;
+    transition: opacity .55s ease, transform .55s ease;
+  }
+
+  .screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(30px);
+  }
+
+  #intro {
+    text-align: center;
+    gap: 0;
+  }
+
+  .stage-frame {
+    position: relative;
+    width: min(580px, 100%);
+    padding: 52px 36px 44px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.04) 0%, transparent 60%),
+      rgba(10,5,15,.7);
+    border: 1px solid rgba(212,160,23,.25);
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+    box-shadow:
+      0 0 0 1px rgba(212,160,23,.1),
+      0 0 60px rgba(139,0,0,.4),
+      0 0 120px rgba(74,14,107,.25),
+      inset 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  .stage-frame::before, .stage-frame::after,
+  .corner-bl, .corner-br {
+    content: '✦';
+    position: absolute;
+    font-size: 18px;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 12px var(--amber);
+    animation: gemPulse 2.5s ease-in-out infinite alternate;
+  }
+
+  .stage-frame::before { top: 14px; left: 18px; }
+  .stage-frame::after { top: 14px; right: 18px; animation-delay: -.8s; }
+  .corner-bl { bottom: 14px; left: 18px; animation-delay: -1.4s; }
+  .corner-br { bottom: 14px; right: 18px; animation-delay: -.4s; }
+
+  @keyframes gemPulse {
+    0% { opacity: .5; transform: scale(.9); }
+    100% { opacity: 1; transform: scale(1.1); }
+  }
+
+  .bulb-strip {
+    display: flex; gap: 10px; justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .bulb {
+    width: 10px; height: 10px; border-radius: 50%;
+    animation: bulbOn 1.6s ease-in-out infinite alternate;
+  }
+
+  .bulb:nth-child(odd) {
+    background: var(--amber);
+    box-shadow: 0 0 8px var(--amber);
+    animation-delay: 0s;
+  }
+
+  .bulb:nth-child(even) {
+    background: var(--hot);
+    box-shadow: 0 0 8px var(--hot);
+    animation-delay: -.8s;
+  }
+
+  @keyframes bulbOn {
+    0% { opacity: .3; transform: scale(.8); }
+    100% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 8vw, 3.6rem);
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--amber) 0%, var(--cream) 40%, var(--gold) 80%, var(--amber) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+    animation: shimmerTitle 4s linear infinite;
+    background-size: 200% auto;
+  }
+
+  @keyframes shimmerTitle {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .intro-subtitle-line {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.05rem, 3.5vw, 1.35rem);
+    color: var(--hot);
+    margin-bottom: 36px;
+    text-shadow: 0 0 20px rgba(230,57,70,.6);
+  }
+
+  .btn-start {
+    position: relative;
+    padding: 16px 52px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: linear-gradient(135deg, var(--amber), var(--gold), var(--amber));
+    background-size: 200% auto;
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 0 30px rgba(212,160,23,.5), 0 4px 20px rgba(0,0,0,.6);
+    animation: btnPulse 2.5s ease-in-out infinite;
+  }
+
+  .btn-start:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 50px rgba(212,160,23,.75), 0 6px 30px rgba(0,0,0,.7);
+    animation: none;
+  }
+
+  @keyframes btnPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(212,160,23,.5), 0 4px 20px rgba(0,0,0,.6); }
+    50% { box-shadow: 0 0 55px rgba(212,160,23,.8), 0 4px 20px rgba(0,0,0,.6); }
+  }
+
+  .particles {
+    position: absolute; inset: 0;
+    overflow: hidden;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--amber);
+    opacity: 0;
+    animation: floatUp 6s ease-in infinite;
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 0; transform: translateY(0) scale(1); }
+    10% { opacity: .8; }
+    90% { opacity: .3; }
+    100% { opacity: 0; transform: translateY(-280px) scale(0); }
+  }
+
+  #quiz { gap: 0; }
+
+  .progress-bar-wrap {
+    width: min(540px, 100%);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .pdot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.12);
+    transition: background .4s, box-shadow .4s;
+  }
+
+  .pdot.done {
+    background: var(--hot);
+    box-shadow: 0 0 8px var(--hot);
+  }
+
+  .pdot.active {
+    background: var(--gold);
+    box-shadow: 0 0 10px var(--amber);
+  }
+
+  .card {
+    width: min(540px, 100%);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.05) 0%, transparent 50%),
+      rgba(12,7,20,.75);
+    border: 1px solid rgba(212,160,23,.18);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.04),
+      0 20px 60px rgba(0,0,0,.7),
+      0 0 80px rgba(139,0,0,.2),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter: blur(12px);
+    text-align: center;
+    animation: cardIn .5s ease both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(22px) scale(.97); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .q-number {
+    font-size: .72rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: rgba(212,160,23,.7);
+    margin-bottom: 16px;
+  }
+
+  .q-image-wrap {
+    width: 100%;
+    max-width: 240px;
+    height: 200px;
+    margin: 0 auto 22px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid rgba(212,160,23,.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,.6), 0 0 30px rgba(139,0,0,.25);
+    background: rgba(0,0,0,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .q-image-wrap.last-q {
+    max-width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border-color: rgba(212,160,23,.45);
+    box-shadow: 0 8px 40px rgba(0,0,0,.6), 0 0 50px rgba(230,57,70,.35);
+  }
+
+  .q-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 5vw, 1.75rem);
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 24px;
+    line-height: 1.25;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .btn-option {
+    position: relative;
+    padding: 14px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: .03em;
+    color: var(--cream);
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, transform .15s, box-shadow .2s, font-size .3s;
+    overflow: hidden;
+  }
+
+  .btn-option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+    transform: translateX(-100%);
+    transition: transform .4s;
+  }
+
+  .btn-option:hover::before { transform: translateX(100%); }
+
+  .btn-option:hover {
+    background: rgba(212,160,23,.15);
+    border-color: rgba(212,160,23,.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.4);
+  }
+
+  .btn-option.wrong {
+    animation: shake .45s ease;
+    border-color: rgba(230,57,70,.6);
+    background: rgba(230,57,70,.1);
+  }
+
+  .btn-option.correct {
+    background: rgba(212,160,23,.25);
+    border-color: rgba(212,160,23,.6);
+    box-shadow: 0 0 24px rgba(212,160,23,.4);
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: rgba(10,5,15,.92);
+    border: 1px solid rgba(230,57,70,.45);
+    border-radius: 50px;
+    padding: 13px 28px;
+    font-size: .88rem;
+    color: var(--hot);
+    white-space: nowrap;
+    box-shadow: 0 8px 30px rgba(0,0,0,.6);
+    opacity: 0;
+    transition: opacity .3s, transform .3s;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .sparkle-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 90;
+    display: none;
+  }
+
+  .sparkle-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    animation: sparkFly .9s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes sparkFly {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+  }
+
+  #final { text-align: center; }
+
+  .final-card {
+    width: min(520px, 100%);
+    padding: 52px 36px 44px;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.06) 0%, transparent 60%),
+      rgba(10,5,18,.8);
+    border: 1px solid rgba(212,160,23,.3);
+    border-radius: 22px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.05),
+      0 30px 80px rgba(0,0,0,.75),
+      0 0 100px rgba(139,0,0,.3),
+      0 0 160px rgba(74,14,107,.2),
+      inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(14px);
+    position: relative;
+    overflow: hidden;
+    animation: cardIn .6s ease both;
+  }
+
+  .final-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 22px;
+    background: conic-gradient(from 0deg, var(--crimson), var(--gold), var(--violet), var(--hot), var(--gold), var(--crimson));
+    z-index: -1;
+    opacity: .5;
+    animation: spinGlow 6s linear infinite;
+  }
+
+  @keyframes spinGlow {
+    to { transform: rotate(360deg); }
+  }
+
+  .final-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--amber), var(--cream), var(--gold));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 18px;
+    line-height: 1.1;
+  }
+
+  .final-sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(.95rem, 3vw, 1.15rem);
+    color: rgba(255,248,240,.65);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .final-sub strong {
+    color: var(--hot);
+    font-style: normal;
+    text-shadow: 0 0 15px rgba(230,57,70,.5);
+  }
+
+  .final-video {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 16px;
+    display: block;
+    margin: 0 auto 26px;
+    border: 1px solid rgba(212,160,23,.25);
+    box-shadow: 0 10px 30px rgba(0,0,0,.45);
+    background: #000;
+  }
+
+  .btn-restart {
+    padding: 13px 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(255,248,240,.7);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all .25s;
+  }
+
+  .btn-restart:hover {
+    background: rgba(255,255,255,.07);
+    border-color: rgba(212,160,23,.4);
+    color: var(--cream);
+  }
+
+  .hearts-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+  }
+
+  .heart-float {
+    position: absolute;
+    bottom: -40px;
+    font-size: 1.4rem;
+    opacity: 0;
+    animation: floatHeart 6s ease-in-out infinite;
+  }
+
+  @keyframes floatHeart {
+    0% { opacity: 0; transform: translateY(0) rotate(-10deg) scale(.8); }
+    10% { opacity: .7; }
+    90% { opacity: .3; }
+    100% { opacity: 0; transform: translateY(-90vh) rotate(15deg) scale(1.1); }
+  }
+
+  @media (max-width: 480px) {
+    .stage-frame, .card, .final-card { padding: 28px 20px 24px; }
+    .q-image-wrap { height: 170px; }
+    .q-image-wrap.last-q { height: 170px; }
+    .final-video { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="spotlights">
+  <div class="spot spot-1"></div>
+  <div class="spot spot-2"></div>
+  <div class="spot spot-3"></div>
+</div>
+
+<div class="hearts-layer" id="heartsLayer"></div>
+<div class="toast" id="toast"></div>
+<div class="sparkle-layer" id="sparkleLayer"></div>
+
+<div class="screen" id="intro">
+  <div class="stage-frame">
+    <span class="corner-bl"></span>
+    <span class="corner-br"></span>
+
+    <div class="particles" id="particles"></div>
+    <div class="bulb-strip" id="bulbStrip"></div>
+
+    <p class="eyebrow">✦ &nbsp; Bir Akşam &nbsp; ✦</p>
+    <h1 class="intro-title">Quiz Show'a<br>Hoş Geldiniz</h1>
+    <p class="intro-subtitle-line">Cevapla bakalım... doğru cevabı biliyor musun? 💋</p>
+    <button class="btn-start" id="btnStart">Başla &nbsp;→</button>
+  </div>
+</div>
+
+<div class="screen hidden" id="quiz">
+  <div class="progress-bar-wrap">
+    <div class="progress-dots" id="progressDots"></div>
+  </div>
+
+  <div class="card" id="card">
+    <p class="q-number" id="qNumber"></p>
+
+    <div class="q-image-wrap" id="qImageWrap">
+      <img id="qImage" src="" alt="" />
+    </div>
+
+    <h2 class="q-text" id="qText"></h2>
+    <div class="options" id="options"></div>
+  </div>
+</div>
+
+<div class="screen hidden" id="final">
+  <div class="final-card">
+    <h2 class="final-title">sen.</h2>
+    <p class="final-sub">
+      Diğerleri ihtiyaç olabilir...<br>
+      ama <strong>benim cevabım</strong> hep sendin.
+    </p>
+
+    <video class="final-video" autoplay muted playsinline>
+      <source src="final.mp4" type="video/mp4" />
+      Tarayıcın video etiketini desteklemiyor.
+    </video>
+
+    <button class="btn-restart" id="btnRestart">Yeniden Oyna ↺</button>
+  </div>
+</div>
+
+<script>
+const IMAGES = {
+  cat: "kedi.jpeg",
+  fish: "balik.jpg",
+  flower: "cicek.jpg",
+  dog: "kopek.jpg",
+  me: "ben.jpeg"
+};
+
+const QUIPS = [
+  "olmadı ama fena deneme değildi 😏",
+  "yakınsın ama kalbim başka dedi 💔",
+  "mantıklı ama doğru değil 🙃",
+  "bu kadar mantık fazla :)",
+  "asıl cevap daha özel ✨",
+  "yok, benim aklımdaki o değil 😌",
+  "güzel çabaladın ama olmadı 🌹",
+];
+
+const QUESTIONS = [
+  {
+    number: "Soru 1 / 5",
+    text: "Kediye ne lazım?",
+    imageKey: "cat",
+    options: ["süt", "çikolata", "kahve"],
+    correct: "süt",
+    isLast: false,
+  },
+  {
+    number: "Soru 2 / 5",
+    text: "Balığa ne lazım?",
+    imageKey: "fish",
+    options: ["yem", "ps5", "ayakkabı"],
+    correct: "yem",
+    isLast: false,
+  },
+  {
+    number: "Soru 3 / 5",
+    text: "Çiçeğe ne lazım?",
+    imageKey: "flower",
+    options: ["kolonya", "nescafe", "su"],
+    correct: "su",
+    isLast: false,
+  },
+  {
+    number: "Soru 4 / 5",
+    text: "Köpeğe ne lazım?",
+    imageKey: "dog",
+    options: ["kemik", "şarj aleti", "parfüm"],
+    correct: "kemik",
+    isLast: false,
+  },
+  {
+    number: "Soru 5 / 5",
+    text: "Bana ne lazım?",
+    imageKey: "me",
+    options: ["su", "oksijen", "sen"],
+    correct: "sen",
+    isLast: true,
+  },
+];
+
+let currentQ = 0;
+let lastQWrongCount = 0;
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+function showScreen(id) {
+  ["intro", "quiz", "final"].forEach((screenId) => {
+    const el = $(screenId);
+    if (screenId === id) el.classList.remove("hidden");
+    else el.classList.add("hidden");
+  });
+}
+
+function showToast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove("show"), 2400);
+}
+
+function randomQuip() {
+  return QUIPS[Math.floor(Math.random() * QUIPS.length)];
+}
+
+function spawnSparkles() {
+  const layer = $("sparkleLayer");
+  layer.style.display = "block";
+  layer.innerHTML = "";
+  const colors = ["#f5c842", "#e63946", "#d4a017", "#fff8f0", "#c0392b"];
+
+  for (let i = 0; i < 28; i++) {
+    const d = document.createElement("div");
+    d.className = "sparkle-dot";
+    const angle = Math.random() * 360;
+    const dist = 80 + Math.random() * 200;
+    d.style.cssText = `
+      left:50%; top:50%;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      --dx:${Math.cos(angle * Math.PI / 180) * dist}px;
+      --dy:${Math.sin(angle * Math.PI / 180) * dist}px;
+      animation-delay:${Math.random() * .2}s;
+      width:${5 + Math.random() * 8}px;
+      height:${5 + Math.random() * 8}px;
+    `;
+    layer.appendChild(d);
+  }
+
+  setTimeout(() => {
+    layer.style.display = "none";
+  }, 1200);
+}
+
+(function buildIntro() {
+  const strip = $("bulbStrip");
+  for (let i = 0; i < 14; i++) {
+    const b = document.createElement("div");
+    b.className = "bulb";
+    strip.appendChild(b);
+  }
+
+  const wrap = $("particles");
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement("div");
+    p.className = "particle";
+    p.style.cssText = `
+      left:${10 + Math.random() * 80}%;
+      bottom:${Math.random() * 30}%;
+      animation-delay:${Math.random() * 6}s;
+      animation-duration:${5 + Math.random() * 4}s;
+      background:${Math.random() > .5 ? "#f5c842" : "#e63946"};
+    `;
+    wrap.appendChild(p);
+  }
+})();
+
+function buildDots() {
+  const c = $("progressDots");
+  c.innerHTML = "";
+  QUESTIONS.forEach((_, i) => {
+    const d = document.createElement("div");
+    d.className = "pdot" + (i < currentQ ? " done" : i === currentQ ? " active" : "");
+    c.appendChild(d);
+  });
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  buildDots();
+
+  const card = $("card");
+  card.style.animation = "none";
+  void card.offsetWidth;
+  card.style.animation = "";
+
+  $("qNumber").textContent = q.number;
+  $("qText").textContent = q.text;
+
+  const wrap = $("qImageWrap");
+  const img = $("qImage");
+
+  wrap.className = q.isLast ? "q-image-wrap last-q" : "q-image-wrap";
+  img.src = IMAGES[q.imageKey];
+  img.alt = q.text;
+  img.style.display = "block";
+
+  const opts = $("options");
+  opts.innerHTML = "";
+
+  q.options.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.className = "btn-option";
+    btn.textContent = opt;
+
+    if (q.isLast && opt === "sen") {
+      const grow = 1 + lastQWrongCount * 0.12;
+      btn.style.transform = `scale(${Math.min(grow, 1.45)})`;
+    }
+
+    btn.addEventListener("click", () => handleAnswer(opt, btn));
+    opts.appendChild(btn);
+  });
+}
+
+function handleAnswer(choice, btn) {
+  const q = QUESTIONS[currentQ];
+  const allBtns = $("options").querySelectorAll(".btn-option");
+
+  if (choice === q.correct) {
+    btn.classList.add("correct");
+    allBtns.forEach((b) => {
+      b.disabled = true;
+    });
+    spawnSparkles();
+
+    setTimeout(() => {
+      currentQ++;
+      if (currentQ >= QUESTIONS.length) {
+        showFinal();
+      } else {
+        renderQuestion();
+      }
+    }, 600);
+  } else {
+    btn.classList.add("wrong");
+    showToast(randomQuip());
+
+    if (q.isLast) {
+      lastQWrongCount++;
+      const senBtn = [...allBtns].find((b) => b.textContent === "sen");
+      if (senBtn) {
+        const grow = 1 + lastQWrongCount * 0.12;
+        senBtn.style.transform = `scale(${Math.min(grow, 1.45)})`;
+      }
+    }
+
+    setTimeout(() => btn.classList.remove("wrong"), 500);
+  }
+}
+
+function showFinal() {
+  showScreen("final");
+  spawnSparkles();
+  buildHearts();
+
+  const video = document.querySelector(".final-video");
+  if (video) {
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  }
+}
+
+function buildHearts() {
+  const layer = $("heartsLayer");
+  layer.innerHTML = "";
+  const emojis = ["❤️", "💖", "💝", "✨", "🌹", "💫", "💕"];
+
+  for (let i = 0; i < 18; i++) {
+    const h = document.createElement("div");
+    h.className = "heart-float";
+    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    h.style.cssText = `
+      left:${5 + Math.random() * 90}%;
+      animation-delay:${Math.random() * 6}s;
+      animation-duration:${5 + Math.random() * 5}s;
+      font-size:${1 + Math.random() * 1.4}rem;
+    `;
+    layer.appendChild(h);
+  }
+}
+
+function restart() {
+  currentQ = 0;
+  lastQWrongCount = 0;
+  $("heartsLayer").innerHTML = "";
+  showScreen("intro");
+}
+
+$("btnStart").addEventListener("click", () => {
+  showScreen("quiz");
+  renderQuestion();
+});
+
+$("btnRestart").addEventListener("click", restart);
+</script>
+</body>
+</html>
+<!-- Not: ben.jpeg dosyasını da index.html ile aynı klasöre koy. -->
